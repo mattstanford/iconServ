@@ -1,6 +1,9 @@
 require 'sinatra'
 
-get '/*' do
-  path = params[:splat].first
-  "path: #{path}"
+class MyApp < Sinatra::Application
+
+  enable :logging
+  
 end
+
+require_relative 'routes/init'
