@@ -1,8 +1,12 @@
-require 'sinatra'
+require 'sinatra/base'
+require 'sinatra/reloader'
 
 class MyApp < Sinatra::Application
 
-  enable :logging
+  configure :development do
+    register Sinatra::Reloader
+    enable :logging
+  end
   
 end
 
