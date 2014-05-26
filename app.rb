@@ -11,3 +11,5 @@ class MyApp < Sinatra::Application
 end
 
 require_relative 'routes/init'
+
+Rack::Handler::WEBrick.run(MyApp.new, :Port => 9292)
