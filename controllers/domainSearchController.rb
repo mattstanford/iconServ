@@ -11,36 +11,40 @@ class MyApp < Sinatra::Application
     
   end
   
-  def findFavIcon(domain)
+  def findFavIcon(domain) 
+
+    favIconUrl = "http://#{domain}/favicon.ico"
     
-    begin
-      favIconUrl = "http://#{domain}/favicon.ico"   
-      doesExist = urlExists?(favIconUrl)
-      
-      if(doesExist)
-        return "icon exists!"
-      else
-        return "icon doesn't exist!"
-      end
-      
-    rescue URI::InvalidURIError => err
-      
-      return "invalid url!"
-      
-    end
+    url = getRealUrlLocation(favIconUrl)
+    
     
   end
   
-  def urlExists?(urlString)
+  def getRealUrlLocation(urlString)
     
-    url = URI.parse(urlString)
-    req = Net::HTTP.new(url.host, url.port)
-    res = req.request_head(url.path)
+    begin
+    
+      url = URI.parse(urlString)
+      req = Net::HTTP.new(url.host, url.port)
+      res = req.request_head(url.path)
+        
+      if res.code == "200"
+        return urlString
+      #Redirect (300 codes)
+      elsif res.code.to_i / 100 == 3
+        return res.header['location']
+      else
+        return false
+      end
+    
+    rescue URI::InvalidURIError => err
       
-    if res.code == 200
-      return true
-    else
-      return false
+      return ""
+      
+    rescue SocketError => se
+      
+      return ""
+      
     end
          
   end
