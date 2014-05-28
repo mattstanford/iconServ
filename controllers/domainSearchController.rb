@@ -45,6 +45,10 @@ class MyApp < Sinatra::Application
       
       return ""
       
+    rescue StandardError
+      
+      return ""
+      
     end
          
   end
