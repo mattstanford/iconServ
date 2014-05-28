@@ -34,7 +34,7 @@ class MyApp < Sinatra::Application
       elsif res.code.to_i / 100 == 3
         return res.header['location']
       else
-        return false
+        return ""
       end
     
     rescue URI::InvalidURIError => err
