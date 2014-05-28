@@ -1,12 +1,14 @@
 
 require "net/http"
+require "nokogiri"
+require "open-uri"
 
 class MyApp < Sinatra::Application
   
   def findIconForDomain(domain)
     
-    findFavIconString = findFavIcon(domain)
-    
+    #findFavIconString = findFavIcon(domain)
+    findFavIconInLinkTag(domain)
     #"favIconUrl: #{favIconUrl}"
     
   end
@@ -17,6 +19,18 @@ class MyApp < Sinatra::Application
     
     url = getRealUrlLocation(favIconUrl)
     
+    
+  end
+  
+  def findFavIconInLinkTag(domain)
+  
+    urlString = "http://#{domain}/"
+    
+    parsedPage = Nokogiri::HTML(open(urlString))
+    faviconLinkElement = parsedPage.css("link[rel='shortcut icon']")
+    faviconLink = faviconLinkElement[0]['href']
+    
+    return faviconLink
     
   end
   
