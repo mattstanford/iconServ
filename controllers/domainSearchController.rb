@@ -41,11 +41,8 @@ class MyApp < Sinatra::Application
       
       return ""
       
-    rescue SocketError => se
-      
-      return ""
-      
-    rescue StandardError
+    rescue SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
+       Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
       
       return ""
       
