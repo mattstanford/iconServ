@@ -13,6 +13,8 @@ class MyApp < Sinatra::Application
     
   end
   
+  #Tries to get the favicon from the root folder of the domain
+ 
   def findFavIcon(domain) 
 
     favIconUrl = "http://#{domain}/favicon.ico"
@@ -21,7 +23,9 @@ class MyApp < Sinatra::Application
     
     
   end
-  
+ 
+  #Tries to get the favicon from a "link" tag in the head of the HTML page
+   
   def findFavIconInLinkTag(domain)
   
   
@@ -32,7 +36,7 @@ class MyApp < Sinatra::Application
       parsedPage = Nokogiri::HTML(open(urlString))
       faviconLinkElement = parsedPage.css("link[rel='shortcut icon']")
       
-      if faviconLinkElement.size > 0# and faviconLinkElement[0].has_key?('href')
+      if faviconLinkElement.size > 0
       
         faviconLink = faviconLinkElement[0]['href']
         
@@ -48,6 +52,8 @@ class MyApp < Sinatra::Application
     return faviconLink
     
   end
+  
+  #Checks to see if the url supplied is the "real" url.  Supplies a redirected url if it is not
   
   def getRealUrlLocation(urlString)
     
