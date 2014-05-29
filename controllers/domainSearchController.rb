@@ -24,12 +24,27 @@ class MyApp < Sinatra::Application
   
   def findFavIconInLinkTag(domain)
   
-    urlString = "http://#{domain}/"
-    
-    parsedPage = Nokogiri::HTML(open(urlString))
-    faviconLinkElement = parsedPage.css("link[rel='shortcut icon']")
-    faviconLink = faviconLinkElement[0]['href']
-    
+  
+    begin
+
+      urlString = "http://#{domain}/"
+      
+      parsedPage = Nokogiri::HTML(open(urlString))
+      faviconLinkElement = parsedPage.css("link[rel='shortcut icon']")
+      
+      if faviconLinkElement.size > 0# and faviconLinkElement[0].has_key?('href')
+      
+        faviconLink = faviconLinkElement[0]['href']
+        
+      end
+      
+    rescue URI::InvalidURIError, SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
+       Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => err
+      
+      faviconLInk = ""
+      
+    end
+      
     return faviconLink
     
   end
@@ -50,16 +65,11 @@ class MyApp < Sinatra::Application
       else
         return ""
       end
-    
-    rescue URI::InvalidURIError => err
       
-      return ""
-      
-    rescue SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-       Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-      
-      return ""
-      
+    rescue URI::InvalidURIError, SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
+       Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => err
+        
+        return ""
     end
          
   end
