@@ -7,9 +7,13 @@ class MyApp < Sinatra::Application
   
   def findIconForDomain(domain)
     
-    #findFavIconString = findFavIcon(domain)
-    findFavIconInLinkTag(domain)
+    rootIcon = findFavIcon(domain)
+    linkIcon = findFavIconInLinkTag(domain)
     #"favIconUrl: #{favIconUrl}"
+    
+    returnString = "#{rootIcon}"
+    
+    "favicon: "  + rootIcon + linkIcon
     
   end
   
@@ -31,6 +35,7 @@ class MyApp < Sinatra::Application
   
     begin
 
+      faviconLink = ""
       urlString = "http://#{domain}/"
       
       parsedPage = Nokogiri::HTML(open(urlString))
