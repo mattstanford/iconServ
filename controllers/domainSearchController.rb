@@ -7,54 +7,54 @@ class MyApp < Sinatra::Application
   
   def findIconForDomain(domain)
     
-    rootIcon = findFavIcon(domain)
-    linkIcon = findFavIconInLinkTag(domain)
+    rootIcon = findFileAtPath(domain, "favicon.ico")
+    linkIcon = findIconLinkOnPage(domain, "link[rel='shortcut icon']", 'href')
     #"favIconUrl: #{favIconUrl}"
     
     returnString = "#{rootIcon}"
     
-    "favicon: "  + rootIcon + linkIcon
+    "favicon: "  + rootIcon + "," + linkIcon
     
   end
   
-  #Tries to get the favicon from the root folder of the domain
+  #Tries to get a favicon from a specified file location
  
-  def findFavIcon(domain) 
+  def findFileAtPath(domain, path) 
 
-    favIconUrl = "http://#{domain}/favicon.ico"
+    urlPath = "http://#{domain}/#{path}"
     
-    url = getRealUrlLocation(favIconUrl)
+    url = getRealUrlLocation(urlPath)
     
     
   end
  
-  #Tries to get the favicon from a "link" tag in the head of the HTML page
+  #Tries to get the favicon from a tag in the head of the HTML page
    
-  def findFavIconInLinkTag(domain)
+  def findIconLinkOnPage(domain, cssTagLink, cssTagAttribute)
   
   
     begin
 
-      faviconLink = ""
+      linkString = ""
       urlString = "http://#{domain}/"
       
       parsedPage = Nokogiri::HTML(open(urlString))
-      faviconLinkElement = parsedPage.css("link[rel='shortcut icon']")
+      elements = parsedPage.css(cssTagLink)
       
-      if faviconLinkElement.size > 0
+      if elements.size > 0
       
-        faviconLink = faviconLinkElement[0]['href']
+        linkString = elements[0][cssTagAttribute]
         
       end
       
     rescue URI::InvalidURIError, SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
        Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => err
       
-      faviconLInk = ""
+      linkString = ""
       
     end
       
-    return faviconLink
+    return linkString
     
   end
   
