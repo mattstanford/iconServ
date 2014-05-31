@@ -8,12 +8,18 @@ class MyApp < Sinatra::Application
   def findIconForDomain(domain)
     
     rootIcon = findFileAtPath(domain, "favicon.ico")
-    linkIcon = findIconLinkOnPage(domain, "link[rel='shortcut icon']", 'href')
+    linkShortcutIcon = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
+    linkIcon = findIconLinkOnPage(domain, "link[rel='icon']", "href")
+    appleTouchLinkIcon = findIconLinkOnPage(domain, "link[rel='apple-touch-icon']", "href")
+    appleTouchIcon = findFileAtPath(domain, "apple-touch-icon.png")
+    microsoftTileLink = findIconLinkOnPage(domain, "meta[name='msapplication-TileImage']", "content")
+    openGraphLink = findIconLinkOnPage(domain, "meta[property='og:image']", "content")
+    
     #"favIconUrl: #{favIconUrl}"
     
     returnString = "#{rootIcon}"
     
-    "favicon: "  + rootIcon + "," + linkIcon
+    "favicon: "  + rootIcon + "," + linkShortcutIcon
     
   end
   
