@@ -2,14 +2,16 @@
 require "net/http"
 require "nokogiri"
 require "open-uri"
+require "json"
 
 class MyApp < Sinatra::Application
   
   def findIconForDomain(domain)
     
-    iconsArray = getHashOfAvailableIconsForDomain(domain)
+    content_type :json
     
-    "favicons: " + iconsArray.join(",") 
+    iconsArray = getHashOfAvailableIconsForDomain(domain)
+    {'icons' => iconsArray }.to_json
     
   end
   
