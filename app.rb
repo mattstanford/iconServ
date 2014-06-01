@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/reloader'
+require "sinatra/activerecord"
 
 class MyApp < Sinatra::Application
 
@@ -8,8 +9,8 @@ class MyApp < Sinatra::Application
     enable :logging
   end
   
+  set :database, "sqlite3:db/iconServ.db"
+  
 end
 
 require_relative 'routes/init'
-
-Rack::Handler::WEBrick.run(MyApp.new, :Port => 9292)

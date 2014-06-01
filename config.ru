@@ -1,2 +1,2 @@
-require ::File.join( ::File.dirname(__FILE__), 'app' )
-run MyApp.new
+require "./app"
+Rack::Handler::WEBrick.run(MyApp.new, :Port => 9292)
