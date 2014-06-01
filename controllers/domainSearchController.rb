@@ -7,20 +7,41 @@ class MyApp < Sinatra::Application
   
   def findIconForDomain(domain)
     
+    iconsArray = getHashOfAvailableIconsForDomain(domain)
+    
+    "favicons: " + iconsArray.join(",") 
+    
+  end
+  
+  #Get an array of available icons availale for this domain
+  
+  def getHashOfAvailableIconsForDomain(domain)
+    
+    icons = Array.new
+    
     rootIcon = findFileAtPath(domain, "favicon.ico")
+    icons.push(rootIcon) if rootIcon.size > 0
+    
     linkShortcutIcon = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
+    icons.push(linkShortcutIcon) if linkShortcutIcon.size > 0
+    
     linkIcon = findIconLinkOnPage(domain, "link[rel='icon']", "href")
+    icons.push(linkIcon) if linkIcon.size > 0
+    
     appleTouchLinkIcon = findIconLinkOnPage(domain, "link[rel='apple-touch-icon']", "href")
+    icons.push(appleTouchLinkIcon) if (appleTouchLinkIcon.size > 0)
+     
     appleTouchIcon = findFileAtPath(domain, "apple-touch-icon.png")
+    icons.push(appleTouchIcon) if appleTouchIcon.size > 0
+    
     microsoftTileLink = findIconLinkOnPage(domain, "meta[name='msapplication-TileImage']", "content")
+    icons.push(microsoftTileLink) if microsoftTileLink.size > 0
+    
     openGraphLink = findIconLinkOnPage(domain, "meta[property='og:image']", "content")
+    icons.push(openGraphLink) if openGraphLink.size > 0
     
-    #"favIconUrl: #{favIconUrl}"
-    
-    returnString = "#{rootIcon}"
-    
-    "favicon: "  + rootIcon + "," + linkShortcutIcon
-    
+    return icons
+
   end
   
   #Tries to get a favicon from a specified file location
