@@ -22,27 +22,26 @@ class MyApp < Sinatra::Application
     
     icons = Array.new
     
-    rootIcon = findFileAtPath(domain, "favicon.ico")
-    getImageInfoFromFile(rootIcon)
-    icons.push(rootIcon) if rootIcon.size > 0
+    rootIconInfo = findFileAtPath(domain, "favicon.ico")
+    icons.push(rootIconInfo) if rootIconInfo != nil
     
-    linkShortcutIcon = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
-    icons.push(linkShortcutIcon) if linkShortcutIcon.size > 0
+    #linkShortcutIconInfo = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
+    #icons.push(linkShortcutIconInfo) if linkShortcutIconInfo != nil
     
-    linkIcon = findIconLinkOnPage(domain, "link[rel='icon']", "href")
-    icons.push(linkIcon) if linkIcon.size > 0
+    #linkIconInfo = findIconLinkOnPage(domain, "link[rel='icon']", "href")
+    #icons.push(linkIconInfo) if linkIconInfo != nil
     
-    appleTouchLinkIcon = findIconLinkOnPage(domain, "link[rel='apple-touch-icon']", "href")
-    icons.push(appleTouchLinkIcon) if (appleTouchLinkIcon.size > 0)
+    #appleTouchLinkIconInfo = findIconLinkOnPage(domain, "link[rel='apple-touch-icon']", "href")
+    #icons.push(appleTouchLinkIconInfo) if appleTouchLinkIconInfo != nil
      
-    appleTouchIcon = findFileAtPath(domain, "apple-touch-icon.png")
-    icons.push(appleTouchIcon) if appleTouchIcon.size > 0
+    #appleTouchIconInfo = findFileAtPath(domain, "apple-touch-icon.png")
+    #icons.push(appleTouchIconInfo) if appleTouchIconInfoInfo != nil
     
-    microsoftTileLink = findIconLinkOnPage(domain, "meta[name='msapplication-TileImage']", "content")
-    icons.push(microsoftTileLink) if microsoftTileLink.size > 0
+    #microsoftTileLinkInfo = findIconLinkOnPage(domain, "meta[name='msapplication-TileImage']", "content")
+    #icons.push(microsoftTileLinkInfo) if microsoftTileLinkInfo != nil
     
-    openGraphLink = findIconLinkOnPage(domain, "meta[property='og:image']", "content")
-    icons.push(openGraphLink) if openGraphLink.size > 0
+    #openGraphLinkInfo = findIconLinkOnPage(domain, "meta[property='og:image']", "content")
+    #icons.push(openGraphLinkInfo) if openGraphLinkInfo != nil
     
     return icons
 
@@ -56,18 +55,22 @@ class MyApp < Sinatra::Application
   
   def getImageInfoFromFile(fileUrl)
     
-    #imageInfo = ImageInfo.new
+    imageInfo = ImageInfo.new
     
     # Get the file type by getting the string after the last "."
     fileFormat = fileUrl.split('.').last
     
     #Read in the image using the RMagick library
     image = Magick::ImageList.new
-    imageBlob = open('http://ebay.com/favicon.ico')
+    imageBlob = open(fileUrl)
     image.from_blob(imageBlob.read){self.format=fileFormat}
     
-    width = image.columns
-    height = image.rows
+    imageInfo.url = fileUrl
+    imageInfo.width = image.columns
+    imageInfo.height = image.rows
+    imageInfo.type = fileFormat
+    
+    return imageInfo
     
   end
   
@@ -78,7 +81,9 @@ class MyApp < Sinatra::Application
     urlPath = "http://#{domain}/#{path}"
     
     url = getRealUrlLocation(urlPath)
+    imageInfo = getImageInfoFromFile(url)
     
+    return imageInfo
     
   end
  
@@ -89,7 +94,7 @@ class MyApp < Sinatra::Application
   
     begin
 
-      linkString = ""
+      imageInfo = nil
       urlString = "http://#{domain}/"
       
       parsedPage = Nokogiri::HTML(open(urlString))
@@ -97,18 +102,19 @@ class MyApp < Sinatra::Application
       
       if elements.size > 0
       
-        linkString = elements[0][cssTagAttribute]
+        linkString = elements[0][cssTagAttribute]     
+        imageInfo = getImageInfoFromFile(linkString)
         
       end
       
     rescue URI::InvalidURIError, SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
        Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => err
       
-      linkString = ""
+      linkString = nil
       
     end
       
-    return linkString
+    return imageInfo
     
   end
   

@@ -1,8 +1,8 @@
 class CreateImageInfo < ActiveRecord::Migration
   
   def up
-    create_table :imageInfo do |t|
-      t.string :domainName
+    create_table :image_infos do |t|
+      t.string :url
       t.integer :width
       t.integer :height
       t.string :type
