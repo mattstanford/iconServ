@@ -3,6 +3,7 @@ require "net/http"
 require "nokogiri"
 require "open-uri"
 require "json"
+require "RMagick"
 
 class MyApp < Sinatra::Application
   
@@ -22,6 +23,7 @@ class MyApp < Sinatra::Application
     icons = Array.new
     
     rootIcon = findFileAtPath(domain, "favicon.ico")
+    getImageInfoFromFile(rootIcon)
     icons.push(rootIcon) if rootIcon.size > 0
     
     linkShortcutIcon = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
@@ -44,6 +46,29 @@ class MyApp < Sinatra::Application
     
     return icons
 
+  end
+  
+  def addIconToDB
+    
+    
+    
+  end
+  
+  def getImageInfoFromFile(fileUrl)
+    
+    #imageInfo = ImageInfo.new
+    
+    # Get the file type by getting the string after the last "."
+    fileFormat = fileUrl.split('.').last
+    
+    #Read in the image using the RMagick library
+    image = Magick::ImageList.new
+    imageBlob = open('http://ebay.com/favicon.ico')
+    image.from_blob(imageBlob.read){self.format=fileFormat}
+    
+    width = image.columns
+    height = image.rows
+    
   end
   
   #Tries to get a favicon from a specified file location
