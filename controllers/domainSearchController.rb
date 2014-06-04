@@ -56,20 +56,16 @@ class MyApp < Sinatra::Application
   def getImageInfoFromFile(fileUrl)
     
     imageInfo = ImageInfo.new
+    info = getImageInfoBlob(fileUrl)
     
-    # Get the file type by getting the string after the last "."
-    fileFormat = fileUrl.split('.').last
-    
-    #Read in the image using the RMagick library
-    image = Magick::ImageList.new
-    imageBlob = open(fileUrl)
-    image.from_blob(imageBlob.read){self.format=fileFormat}
     
     imageInfo.url = fileUrl
-    imageInfo.width = image.columns
-    imageInfo.height = image.rows
-    imageInfo.type = fileFormat
+    imageInfo.width = info.columns
+    imageInfo.height = info.rows
+    imageInfo.type = info.format
     
+    imageInfo.save
+        
     return imageInfo
     
   end
@@ -144,5 +140,7 @@ class MyApp < Sinatra::Application
     end
          
   end
+  
+  require_relative '../helpers/imageInfoHelpers'
   
 end
