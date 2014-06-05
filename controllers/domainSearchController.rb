@@ -25,8 +25,8 @@ class MyApp < Sinatra::Application
     rootIconInfo = findFileAtPath(domain, "favicon.ico")
     icons.push(rootIconInfo) if rootIconInfo != nil
     
-    #linkShortcutIconInfo = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
-    #icons.push(linkShortcutIconInfo) if linkShortcutIconInfo != nil
+    linkShortcutIconInfo = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
+    icons.push(linkShortcutIconInfo) if linkShortcutIconInfo != nil
     
     #linkIconInfo = findIconLinkOnPage(domain, "link[rel='icon']", "href")
     #icons.push(linkIconInfo) if linkIconInfo != nil

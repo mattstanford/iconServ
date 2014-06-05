@@ -11,13 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140601192813) do
+ActiveRecord::Schema.define(version: 20140605120907) do
 
   create_table "image_infos", force: true do |t|
     t.string  "url"
     t.integer "width"
     t.integer "height"
     t.string  "type"
+    t.string  "domain"
   end
 
 end
