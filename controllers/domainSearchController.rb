@@ -55,16 +55,18 @@ class MyApp < Sinatra::Application
   
   def getImageInfoFromFile(fileUrl)
     
-    imageInfo = ImageInfo.new
     info = getImageInfoBlob(fileUrl)
     
-    
-    imageInfo.url = fileUrl
-    imageInfo.width = info.columns
-    imageInfo.height = info.rows
-    imageInfo.type = info.format
-    
-    imageInfo.save
+    if info
+      
+      imageInfo = ImageInfo.new
+      imageInfo.url = fileUrl
+      imageInfo.width = info.columns
+      imageInfo.height = info.rows
+      imageInfo.type = info.format
+      
+      imageInfo.save
+    end
         
     return imageInfo
     
@@ -103,10 +105,9 @@ class MyApp < Sinatra::Application
         
       end
       
-    rescue URI::InvalidURIError, SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-       Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => err
+    rescue
       
-      linkString = nil
+      imageInfo = nil
       
     end
       
@@ -133,9 +134,7 @@ class MyApp < Sinatra::Application
         return ""
       end
       
-    rescue URI::InvalidURIError, SocketError, Errno::ECONNREFUSED, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-       Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => err
-        
+    rescue
         return ""
     end
          
