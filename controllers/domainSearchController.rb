@@ -20,28 +20,35 @@ class MyApp < Sinatra::Application
   
   def getHashOfAvailableIconsForDomain(domain)
     
-    icons = Array.new
+    #icons = ImageInfo.where('domain = ?', domain)
+    icons = ImageInfo.select('*').where('domain = ?', domain)
+
+    if icons.size == 0
     
-    rootIconInfo = findFileAtPath(domain, "favicon.ico")
-    icons.push(rootIconInfo) if rootIconInfo != nil
-    
-    linkShortcutIconInfo = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
-    icons.push(linkShortcutIconInfo) if linkShortcutIconInfo != nil
-    
-    #linkIconInfo = findIconLinkOnPage(domain, "link[rel='icon']", "href")
-    #icons.push(linkIconInfo) if linkIconInfo != nil
-    
-    #appleTouchLinkIconInfo = findIconLinkOnPage(domain, "link[rel='apple-touch-icon']", "href")
-    #icons.push(appleTouchLinkIconInfo) if appleTouchLinkIconInfo != nil
-     
-    #appleTouchIconInfo = findFileAtPath(domain, "apple-touch-icon.png")
-    #icons.push(appleTouchIconInfo) if appleTouchIconInfoInfo != nil
-    
-    #microsoftTileLinkInfo = findIconLinkOnPage(domain, "meta[name='msapplication-TileImage']", "content")
-    #icons.push(microsoftTileLinkInfo) if microsoftTileLinkInfo != nil
-    
-    #openGraphLinkInfo = findIconLinkOnPage(domain, "meta[property='og:image']", "content")
-    #icons.push(openGraphLinkInfo) if openGraphLinkInfo != nil
+      icons = Array.new
+      
+      rootIconInfo = findFileAtPath(domain, "favicon.ico")
+      icons.push(rootIconInfo) if rootIconInfo != nil
+      
+      linkShortcutIconInfo = findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href")
+      icons.push(linkShortcutIconInfo) if linkShortcutIconInfo != nil
+      
+      #linkIconInfo = findIconLinkOnPage(domain, "link[rel='icon']", "href")
+      #icons.push(linkIconInfo) if linkIconInfo != nil
+      
+      #appleTouchLinkIconInfo = findIconLinkOnPage(domain, "link[rel='apple-touch-icon']", "href")
+      #icons.push(appleTouchLinkIconInfo) if appleTouchLinkIconInfo != nil
+       
+      #appleTouchIconInfo = findFileAtPath(domain, "apple-touch-icon.png")
+      #icons.push(appleTouchIconInfo) if appleTouchIconInfoInfo != nil
+      
+      #microsoftTileLinkInfo = findIconLinkOnPage(domain, "meta[name='msapplication-TileImage']", "content")
+      #icons.push(microsoftTileLinkInfo) if microsoftTileLinkInfo != nil
+      
+      #openGraphLinkInfo = findIconLinkOnPage(domain, "meta[property='og:image']", "content")
+      #icons.push(openGraphLinkInfo) if openGraphLinkInfo != nil
+      
+    end
     
     return icons
 
