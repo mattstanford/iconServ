@@ -53,7 +53,7 @@ class MyApp < Sinatra::Application
     
   end
   
-  def getImageInfoFromFile(fileUrl)
+  def getImageInfoFromFile(domain, fileUrl)
     
     info = getImageInfoBlob(fileUrl)
     
@@ -64,6 +64,7 @@ class MyApp < Sinatra::Application
       imageInfo.width = info.columns
       imageInfo.height = info.rows
       imageInfo.type = info.format
+      imageInfo.domain = domain
       
       imageInfo.save
     end
@@ -79,7 +80,7 @@ class MyApp < Sinatra::Application
     urlPath = "http://#{domain}/#{path}"
     
     url = getRealUrlLocation(urlPath)
-    imageInfo = getImageInfoFromFile(url)
+    imageInfo = getImageInfoFromFile(domain, url)
     
     return imageInfo
     
@@ -101,7 +102,7 @@ class MyApp < Sinatra::Application
       if elements.size > 0
       
         linkString = elements[0][cssTagAttribute]     
-        imageInfo = getImageInfoFromFile(linkString)
+        imageInfo = getImageInfoFromFile(domain, linkString)
         
       end
       
