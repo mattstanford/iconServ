@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 20140605120907) do
     t.string  "url"
     t.integer "width"
     t.integer "height"
-    t.string  "type"
+    t.string  "fileFormat"
     t.string  "domain"
   end
 

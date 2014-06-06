@@ -5,7 +5,7 @@ class CreateImageInfo < ActiveRecord::Migration
       t.string :url
       t.integer :width
       t.integer :height
-      t.string :type
+      t.string :fileFormat
     end
     
   end

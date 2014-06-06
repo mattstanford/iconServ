@@ -63,7 +63,7 @@ class MyApp < Sinatra::Application
       imageInfo.url = fileUrl
       imageInfo.width = info.columns
       imageInfo.height = info.rows
-      imageInfo.type = info.format
+      imageInfo.fileFormat = info.format
       imageInfo.domain = domain
       
       imageInfo.save
