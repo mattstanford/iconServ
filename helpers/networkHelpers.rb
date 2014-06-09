@@ -1,9 +1,10 @@
 
-class MyApp < Sinatra::Application
+#class MyApp < Sinatra::Application
+class NetworkHelpers
   
   #Checks to see if the url supplied is the "real" url.  Supplies a redirected url if it is not
   
-  def getRealUrlLocation(urlString)
+  def self.getRealUrlLocation(urlString)
     
     begin
     

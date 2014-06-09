@@ -4,12 +4,19 @@ require "nokogiri"
 require "open-uri"
 require "json"
 require "RMagick"
+require_relative '../models/imageInfo'
+require_relative '../helpers/networkHelpers'
+require_relative '../helpers/imageInfoHelpers'
 
-class MyApp < Sinatra::Application
+require 'sinatra/base'
+require 'sinatra/reloader'
+require "sinatra/activerecord"
+
+
+#class MyApp < Sinatra::Application
+class DomainSearchController
   
   def findIconForDomain(domain)
-    
-    content_type :json
     
     iconsArray = getArrayOfAvailableIconsForDomain(domain)
     {'icons' => iconsArray }.to_json
@@ -54,7 +61,7 @@ class MyApp < Sinatra::Application
   
   def getImageInfoFromFile(domain, fileUrl)
     
-    info = getImageInfoBlob(fileUrl)
+    info = ImageInfoHelpers.getImageInfoBlob(fileUrl)
     
     if info
       
@@ -78,7 +85,7 @@ class MyApp < Sinatra::Application
 
     urlPath = "http://#{domain}/#{path}"
     
-    url = getRealUrlLocation(urlPath)
+    url = NetworkHelpers.getRealUrlLocation(urlPath)
     imageInfo = getImageInfoFromFile(domain, url)
     
     return imageInfo
@@ -114,8 +121,5 @@ class MyApp < Sinatra::Application
     return imageInfo
     
   end
-  
-  require_relative '../helpers/imageInfoHelpers'
-  require_relative '../helpers/networkHelpers'
   
 end

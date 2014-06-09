@@ -1,10 +1,7 @@
 
 require "sinatra/activerecord"
 
-class MyApp < Sinatra::Application
-  
-  class ImageInfo < ActiveRecord::Base
-  end
-  
+class ImageInfo < ActiveRecord::Base
 end
+
   
