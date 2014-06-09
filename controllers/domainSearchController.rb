@@ -27,8 +27,7 @@ class DomainSearchController
   
   def getArrayOfAvailableIconsForDomain(domain)
     
-    #icons = ImageInfo.where('domain = ?', domain)
-    icons = ImageInfo.select('*').where('domain = ?', domain)
+    icons = ImageInfo.where('domain = ?', domain)
 
     if icons.size == 0
     
