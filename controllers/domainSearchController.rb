@@ -16,52 +16,58 @@ require "sinatra/activerecord"
 #class MyApp < Sinatra::Application
 class DomainSearchController
   
-  def findIconForDomain(domain)
+  def findIconForDomain(searchString)
     
-    iconsArray = getArrayOfAvailableIconsForDomain(domain)
-    {'icons' => iconsArray }.to_json
+    iconsArray = getArrayOfAvailableIconsForDomain(searchString)
+    
+    if iconsArray
+      {'icons' => iconsArray }.to_json
+    else
+      [].to_json
+    end
     
   end
   
   #Get an array of available icons availale for this domain
   
-  def getArrayOfAvailableIconsForDomain(domain)
+  def getArrayOfAvailableIconsForDomain(searchString)
     
-    icons = ImageInfo.where('domain = ?', domain)
-
-    if icons.size == 0
+    url = NetworkHelper.getValidUrl(searchString)
     
-      icons = Array.new
-      url = NetworkHelper.getValidUrl(domain)
+    if url
       
-      if url
+      domain = NetworkHelper.getRealDomainName(url)
+      
+      if domain
+      
+        icons = ImageInfo.where('domain = ?', domain)
     
-        tempIconsArray = Array.new
+        if icons.size == 0
         
-        tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
-        tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href"))
-        tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href"))
-        tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href"))
-        tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
-        tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content")) 
-        tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content"))
+          icons = Array.new
+   
+          tempIconsArray = Array.new
+          
+          tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
+          tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href"))
+          tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href"))
+          tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href"))
+          tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
+          tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content")) 
+          tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content"))
+          
+          tempIconsArray.each do |icon|
+            icons.push(icon) if icon
+          end
+    
+        end #if icons.size == 0
         
-        tempIconsArray.each do |icon|
-          icons.push(icon) if icon
-        end
-        
-      end
-
-    end
+      end  #if domain
+      
+    end  #if url
     
     return icons
 
-  end
-  
-  def addIconToDB
-    
-    
-    
   end
   
   def getImageInfoFromFile(fileUrl)

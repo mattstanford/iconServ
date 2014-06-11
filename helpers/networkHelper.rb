@@ -6,7 +6,7 @@ class NetworkHelper
   
   def self.getValidUrl(domain)
     
-    urlString = urlString = "http://#{domain}/"
+    urlString = "http://#{domain}/"
     
     #Check to make sure the url is valid
     if !urlString.match /\A#{URI::regexp(['http', 'https'])}\z/
@@ -24,9 +24,15 @@ class NetworkHelper
   def self.getRealDomainName(urlString)
     
     uri = URI.parse(urlString)
-    domainObject = PublicSuffix.parse(uri.host)
     
-    return domainObject.domain
+    begin
+      domainObject = PublicSuffix.parse(uri.host)
+      domain = domainObject.domain
+    rescue
+      domain = nil
+    end
+    
+    return domain
     
     
   end
