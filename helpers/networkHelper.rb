@@ -1,5 +1,6 @@
 
 require "open-uri"
+require "public_suffix"
 
 class NetworkHelper
   
@@ -15,6 +16,18 @@ class NetworkHelper
     end
     
     return urlString
+    
+  end
+  
+  
+  #Get the "real" domain name - the top level name + the TLD (i.e. "google.com", not "www.google.com")
+  def self.getRealDomainName(urlString)
+    
+    uri = URI.parse(urlString)
+    domainObject = PublicSuffix.parse(uri.host)
+    
+    return domainObject.domain
+    
     
   end
   

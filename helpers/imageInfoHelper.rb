@@ -2,7 +2,7 @@
 #class MyApp < Sinatra::Application
 class ImageInfoHelper
     
-  def self.getImageInfoBlob(fileUrl)
+  def self.getImageBlob(fileUrl)
     
     begin
       # Get the file type by getting the string after the last "."

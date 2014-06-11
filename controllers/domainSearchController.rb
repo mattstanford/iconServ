@@ -64,18 +64,18 @@ class DomainSearchController
     
   end
   
-  def getImageInfoFromFile(domain, fileUrl)
+  def getImageInfoFromFile(fileUrl)
     
-    info = ImageInfoHelper.getImageInfoBlob(fileUrl)
+    blob = ImageInfoHelper.getImageBlob(fileUrl)
     
-    if info
+    if blob
       
       imageInfo = ImageInfo.new
       imageInfo.url = fileUrl
-      imageInfo.width = info.columns
-      imageInfo.height = info.rows
-      imageInfo.fileFormat = info.format
-      imageInfo.domain = domain
+      imageInfo.width = blob.columns
+      imageInfo.height = blob.rows
+      imageInfo.fileFormat = blob.format
+      imageInfo.domain = NetworkHelper.getRealDomainName(fileUrl)
       
       imageInfo.save
     end
@@ -90,8 +90,10 @@ class DomainSearchController
     
     urlString = "#{urlString}/#{path}"
     
+    #Account for redirects
     url = NetworkHelper.getRealUrlLocation(urlString)
-    imageInfo = getImageInfoFromFile(urlString, url)
+    
+    imageInfo = getImageInfoFromFile(url)
     
     return imageInfo
     
@@ -111,7 +113,7 @@ class DomainSearchController
       if elements.size > 0
       
         linkString = elements[0][cssTagAttribute]     
-        imageInfo = getImageInfoFromFile(domain, linkString)
+        imageInfo = getImageInfoFromFile(linkString)
         
       end
       
