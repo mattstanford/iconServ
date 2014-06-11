@@ -33,22 +33,16 @@ class DomainSearchController
   def getArrayOfAvailableIconsForDomain(searchString)
     
     url = NetworkHelper.getValidUrl(searchString)
-    
+
     if url
       
-      domain = NetworkHelper.getRealDomainName(url)
+      icons = ImageInfo.where('domain = ?', url.host)
+  
+      if icons.size == 0
       
-      if domain
-      
-        icons = ImageInfo.where('domain = ?', domain)
-    
-        if icons.size == 0
-        
-          icons = self.createImageInfoArray(url)
-    
-        end #if icons.size == 0
-        
-      end  #if domain
+        icons = self.createImageInfoArray(url)
+  
+      end #if icons.size == 0
       
     end  #if url
     
@@ -78,7 +72,7 @@ class DomainSearchController
     
   end
   
-  def getImageInfoFromFile(fileUrl)
+  def getImageInfoFromFile(fileUrl, domain)
     
     blob = ImageInfoHelper.getImageBlob(fileUrl)
     
@@ -89,7 +83,7 @@ class DomainSearchController
       imageInfo.width = blob.columns
       imageInfo.height = blob.rows
       imageInfo.fileFormat = blob.format
-      imageInfo.domain = NetworkHelper.getRealDomainName(fileUrl)
+      imageInfo.domain = domain
       
       imageInfo.save
     end
@@ -100,14 +94,15 @@ class DomainSearchController
   
   #Tries to get a favicon from a specified file location
  
-  def findFileAtPath(urlString, path) 
+  def findFileAtPath(url, path) 
     
+    urlString = url.to_s
     urlString = "#{urlString}/#{path}"
     
     #Account for redirects
-    url = NetworkHelper.getRealUrlLocation(urlString)
+    realUrl = NetworkHelper.getRealUrlLocation(urlString)
     
-    imageInfo = getImageInfoFromFile(url)
+    imageInfo = getImageInfoFromFile(realUrl, url.host)
     
     return imageInfo
     
@@ -115,19 +110,19 @@ class DomainSearchController
  
   #Tries to get the favicon from a tag in the head of the HTML page
    
-  def findIconLinkOnPage(urlString, cssTagLink, cssTagAttribute)
+  def findIconLinkOnPage(url, cssTagLink, cssTagAttribute)
 
     begin
 
       imageInfo = nil
       
-      parsedPage = Nokogiri::HTML(open(urlString))
+      parsedPage = Nokogiri::HTML(open(url.to_s))
       elements = parsedPage.css(cssTagLink)
       
       if elements.size > 0
       
         linkString = elements[0][cssTagAttribute]     
-        imageInfo = getImageInfoFromFile(linkString)
+        imageInfo = getImageInfoFromFile(linkString, url.host)
         
       end
       
