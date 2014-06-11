@@ -1,6 +1,6 @@
 
 #class MyApp < Sinatra::Application
-class ImageInfoHelpers
+class ImageInfoHelper
     
   def self.getImageInfoBlob(fileUrl)
     

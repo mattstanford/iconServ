@@ -5,8 +5,8 @@ require "open-uri"
 require "json"
 require "RMagick"
 require_relative '../models/imageInfo'
-require_relative '../helpers/networkHelpers'
-require_relative '../helpers/imageInfoHelpers'
+require_relative '../helpers/networkHelper'
+require_relative '../helpers/imageInfoHelper'
 
 require 'sinatra/base'
 require 'sinatra/reloader'
@@ -32,18 +32,24 @@ class DomainSearchController
     if icons.size == 0
     
       icons = Array.new
-      tempIconsArray = Array.new
+      url = NetworkHelper.getValidUrl(domain)
       
-      tempIconsArray.push(findFileAtPath(domain, "favicon.ico"))
-      tempIconsArray.push(findIconLinkOnPage(domain, "link[rel='shortcut icon']", "href"))
-      tempIconsArray.push(findIconLinkOnPage(domain, "link[rel='icon']", "href"))
-      tempIconsArray.push(findIconLinkOnPage(domain, "link[rel='apple-touch-icon']", "href"))
-      tempIconsArray.push(findFileAtPath(domain, "apple-touch-icon.png"))
-      tempIconsArray.push(findIconLinkOnPage(domain, "meta[name='msapplication-TileImage']", "content")) 
-      tempIconsArray.push(findIconLinkOnPage(domain, "meta[property='og:image']", "content"))
-      
-      tempIconsArray.each do |icon|
-        icons.push(icon) if icon
+      if url
+    
+        tempIconsArray = Array.new
+        
+        tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
+        tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href"))
+        tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href"))
+        tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href"))
+        tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
+        tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content")) 
+        tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content"))
+        
+        tempIconsArray.each do |icon|
+          icons.push(icon) if icon
+        end
+        
       end
 
     end
@@ -60,7 +66,7 @@ class DomainSearchController
   
   def getImageInfoFromFile(domain, fileUrl)
     
-    info = ImageInfoHelpers.getImageInfoBlob(fileUrl)
+    info = ImageInfoHelper.getImageInfoBlob(fileUrl)
     
     if info
       
@@ -80,12 +86,12 @@ class DomainSearchController
   
   #Tries to get a favicon from a specified file location
  
-  def findFileAtPath(domain, path) 
-
-    urlPath = "http://#{domain}/#{path}"
+  def findFileAtPath(urlString, path) 
     
-    url = NetworkHelpers.getRealUrlLocation(urlPath)
-    imageInfo = getImageInfoFromFile(domain, url)
+    urlString = "#{urlString}/#{path}"
+    
+    url = NetworkHelper.getRealUrlLocation(urlString)
+    imageInfo = getImageInfoFromFile(urlString, url)
     
     return imageInfo
     
@@ -93,13 +99,11 @@ class DomainSearchController
  
   #Tries to get the favicon from a tag in the head of the HTML page
    
-  def findIconLinkOnPage(domain, cssTagLink, cssTagAttribute)
-  
-  
+  def findIconLinkOnPage(urlString, cssTagLink, cssTagAttribute)
+
     begin
 
       imageInfo = nil
-      urlString = "http://#{domain}/"
       
       parsedPage = Nokogiri::HTML(open(urlString))
       elements = parsedPage.css(cssTagLink)

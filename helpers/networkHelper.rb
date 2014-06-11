@@ -1,6 +1,22 @@
 
-#class MyApp < Sinatra::Application
-class NetworkHelpers
+require "open-uri"
+
+class NetworkHelper
+  
+  def self.getValidUrl(domain)
+    
+    urlString = urlString = "http://#{domain}/"
+    
+    #Check to make sure the url is valid
+    if !urlString.match /\A#{URI::regexp(['http', 'https'])}\z/
+    
+      urlString = nil
+        
+    end
+    
+    return urlString
+    
+  end
   
   #Checks to see if the url supplied is the "real" url.  Supplies a redirected url if it is not
   
