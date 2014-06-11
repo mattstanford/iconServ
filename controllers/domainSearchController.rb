@@ -44,21 +44,7 @@ class DomainSearchController
     
         if icons.size == 0
         
-          icons = Array.new
-   
-          tempIconsArray = Array.new
-          
-          tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
-          tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href"))
-          tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href"))
-          tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href"))
-          tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
-          tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content")) 
-          tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content"))
-          
-          tempIconsArray.each do |icon|
-            icons.push(icon) if icon
-          end
+          icons = self.createImageInfoArray(url)
     
         end #if icons.size == 0
         
@@ -68,6 +54,28 @@ class DomainSearchController
     
     return icons
 
+  end
+  
+  def createImageInfoArray(url)
+    
+    icons = Array.new
+   
+    tempIconsArray = Array.new
+    
+    tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
+    tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href"))
+    tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href"))
+    tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href"))
+    tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
+    tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content")) 
+    tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content"))
+    
+    tempIconsArray.each do |icon|
+      icons.push(icon) if icon
+    end
+    
+    return icons
+    
   end
   
   def getImageInfoFromFile(fileUrl)
