@@ -16,13 +16,15 @@ class NetworkHelper
     end
     
     #Check to make sure domain is real
-    if self.getRealDomainName(urlString) == nil
+    if urlString and self.getRealDomainName(urlString) == nil
       
       urlString = nil
       
     end
     
-    url = URI.parse(urlString)
+    if urlString
+      url = URI.parse(urlString)
+    end
     
     return url
     
