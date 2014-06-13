@@ -53,16 +53,22 @@ class DomainSearchController
   def createImageInfoArray(url)
     
     icons = Array.new
-   
     tempIconsArray = Array.new
     
-    tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
-    tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href"))
-    tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href"))
-    tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href"))
-    tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
-    tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content")) 
-    tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content"))
+    begin
+      html = open(url.to_s)
+      htmldata = html.read
+      
+      tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
+      tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
+      tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href", htmldata))
+      tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href", htmldata))
+      tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
+      tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content", htmldata)) 
+      tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content", htmldata))
+    rescue
+      puts "error reading url"
+    end
     
     tempIconsArray.each do |icon|
       icons.push(icon) if icon
@@ -110,13 +116,15 @@ class DomainSearchController
  
   #Tries to get the favicon from a tag in the head of the HTML page
    
-  def findIconLinkOnPage(url, cssTagLink, cssTagAttribute)
+  def findIconLinkOnPage(url, cssTagLink, cssTagAttribute, htmldata)
 
     begin
 
       imageInfo = nil
+
+      htmldata2 = open(url.to_s)
       
-      parsedPage = Nokogiri::HTML(open(url.to_s))
+      parsedPage = Nokogiri::HTML(htmldata)
       elements = parsedPage.css(cssTagLink)
       
       if elements.size > 0
