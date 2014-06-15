@@ -121,8 +121,6 @@ class DomainSearchController
     begin
 
       imageInfo = nil
-
-      htmldata2 = open(url.to_s)
       
       parsedPage = Nokogiri::HTML(htmldata)
       elements = parsedPage.css(cssTagLink)

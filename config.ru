@@ -1,2 +1,2 @@
 require "./app"
-Rack::Handler::WEBrick.run(MyApp.new, :Port => 9292)
+Rack::Handler::Thin.run(MyApp.new, :Port => 9292)
