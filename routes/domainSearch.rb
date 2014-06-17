@@ -4,15 +4,14 @@ require_relative '../controllers/domainSearchController'
 
 class MyApp < Sinatra::Application
   
-  get '/*' do
+  aget '/*' do
     
    path = params[:splat].first
-   #findIconForDomain(path)
    
    content_type :json
    
    domainSearchController = DomainSearchController.new
-   domainSearchController.findIconForDomain(path)
+   body { domainSearchController.findIconForDomain(path) }
    
   end
   

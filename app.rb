@@ -1,8 +1,10 @@
 require 'sinatra/base'
 require 'sinatra/reloader'
-require "sinatra/activerecord"
+require 'sinatra/activerecord'
+require 'sinatra/async'
 
 class MyApp < Sinatra::Application
+  register Sinatra::Async
 
   configure :development do
     register Sinatra::Reloader

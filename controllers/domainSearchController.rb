@@ -10,14 +10,15 @@ require_relative '../helpers/imageInfoHelper'
 
 require 'sinatra/base'
 require 'sinatra/reloader'
-require "sinatra/activerecord"
+require 'sinatra/activerecord'
+require 'sinatra/async'
 
 
 #class MyApp < Sinatra::Application
 class DomainSearchController
   
   def findIconForDomain(searchString)
-    
+
     iconsArray = getArrayOfAvailableIconsForDomain(searchString)
     
     if iconsArray
