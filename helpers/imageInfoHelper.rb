@@ -1,5 +1,7 @@
 
-#class MyApp < Sinatra::Application
+require "em-http-request"
+require_relative 'networkHelper'
+
 class ImageInfoHelper
     
   def self.getImageBlob(fileUrl)
@@ -8,15 +10,29 @@ class ImageInfoHelper
       # Get the file type by getting the string after the last "."
       fileFormat = fileUrl.split('.').last
       
-      #Read in the image using the RMagick library
-      image = Magick::ImageList.new
-      imageBlob = open(fileUrl)
-      image.from_blob(imageBlob.read){self.format=fileFormat}
+      #Get data from the network
+      req = EM::HttpRequest.new(fileUrl).get :redirects => 1
+      req.callback {
+        
+        #Read in the image using the RMagick library
+        image = Magick::ImageList.new
+        #imageBlob = open(fileUrl)
+        imageBlob = req.response
+        #image.from_blob(imageBlob.read){self.format=fileFormat}
+        image.from_blob(imageBlob){self.format=fileFormat}
+        
+        yield image
+        
+      }
+      req.errback {
+        yield nil
+      }
+      
     rescue
-      image = nil
+      yield nil
     end
     
-    return image
+    #return image
     
   end
     
