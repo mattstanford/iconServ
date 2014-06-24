@@ -60,13 +60,17 @@ class DomainSearchController
       html = open(url.to_s)
       htmldata = html.read
       
-      tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
-      tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
-      tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href", htmldata))
-      tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href", htmldata))
-      tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
-      tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content", htmldata)) 
-      tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content", htmldata))
+      findFileAtPath(url, "favicon.ico") { |obj| 
+        puts "got data: #{obj}"
+      }
+      
+      #tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
+      #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
+      #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href", htmldata))
+      #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href", htmldata))
+      #tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
+      #tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content", htmldata)) 
+      #tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content", htmldata))
     rescue
       puts "error reading url"
     end
@@ -81,21 +85,27 @@ class DomainSearchController
   
   def getImageInfoFromFile(fileUrl, domain)
     
-    blob = ImageInfoHelper.getImageBlob(fileUrl)
+    #blob = ImageInfoHelper.getImageBlob(fileUrl)
+    ImageInfoHelper.getImageBlob(fileUrl) { |blob| 
     
-    if blob
-      
-      imageInfo = ImageInfo.new
-      imageInfo.url = fileUrl
-      imageInfo.width = blob.columns
-      imageInfo.height = blob.rows
-      imageInfo.fileFormat = blob.format
-      imageInfo.domain = domain
-      
-      imageInfo.save
-    end
+      imageInfo = nil
+    
+      if blob
         
-    return imageInfo
+        imageInfo = ImageInfo.new
+        imageInfo.url = fileUrl
+        imageInfo.width = blob.columns
+        imageInfo.height = blob.rows
+        imageInfo.fileFormat = blob.format
+        imageInfo.domain = domain
+        
+        imageInfo.save
+      end
+      
+      yield imageInfo
+    }
+        
+    #return imageInfo
     
   end
   
@@ -107,11 +117,17 @@ class DomainSearchController
     urlString = "#{urlString}/#{path}"
     
     #Account for redirects
-    realUrl = NetworkHelper.getRealUrlLocation(urlString)
+    #realUrl = NetworkHelper.getRealUrlLocation(urlString)
+    #NetworkHelper.getRealUrlLocation(urlString) { |realUrl| 
+        
+    #    getImageInfoFromFile(realUrl, url.host) { |imageInfo| yield imageInfo}
+       
+    #  }
+    getImageInfoFromFile(urlString, url.host) { |imageInfo| yield imageInfo }
     
-    imageInfo = getImageInfoFromFile(realUrl, url.host)
+    #imageInfo = getImageInfoFromFile(realUrl, url.host)
     
-    return imageInfo
+    #return imageInfo
     
   end
  

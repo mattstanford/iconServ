@@ -1,8 +1,10 @@
 
 require "open-uri"
 require "public_suffix"
+require "em-http-request"
 
 class NetworkHelper
+  include EM::Deferrable
   
   def self.getValidUrl(domain)
     
@@ -55,20 +57,27 @@ class NetworkHelper
     begin
     
       url = URI.parse(urlString)
-      req = Net::HTTP.new(url.host, url.port)
-      res = req.request_head(url.path)
+      req = EM::HttpRequest.new(urlString).get
+      req.callback {
         
-      if res.code == "200"
-        return urlString
-      #Redirect (300 codes)
-      elsif res.code.to_i / 100 == 3
-        return res.header['location']
-      else
-        return ""
-      end
+        if req.response_header.status == 200
+          returnUrl = urlString
+        #Redirect (300 codes)
+        elsif req.response_header.status / 100 == 3
+          returnUrl = req.response_header['location']
+        else
+          returnUrl = ""
+        end
+        
+        yield returnUrl
+        
+      }
+      req.errback {
+        yield ""
+      }
       
     rescue
-        return ""
+        yield ""
     end
          
   end
