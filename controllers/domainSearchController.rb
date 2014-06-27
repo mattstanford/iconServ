@@ -17,6 +17,11 @@ require 'sinatra/async'
 #class MyApp < Sinatra::Application
 class DomainSearchController
   
+  def initialize
+      @numberOfSearches = 0
+      @icons = Array.new
+  end
+
   def findIconForDomain(searchString)
 
     iconsArray = getArrayOfAvailableIconsForDomain(searchString)
@@ -37,32 +42,54 @@ class DomainSearchController
 
     if url
       
-      icons = ImageInfo.where('domain = ?', url.host)
+      iconsArray = ImageInfo.where('domain = ?', url.host)
   
-      if icons.size == 0
+      if iconsArray.size == 0
       
-        icons = self.createImageInfoArray(url)
+        self.createImageInfoArray(url) { |data| 
+          next data
+        }
+      
+      else
+        
+        return iconsArray
   
       end #if icons.size == 0
       
     end  #if url
     
-    return icons
+    #return iconsArray
 
   end
   
   def createImageInfoArray(url)
     
-    icons = Array.new
-    tempIconsArray = Array.new
+    #icons = Array.new
+    #tempIconsArray = Array.new
     
     begin
       html = open(url.to_s)
       htmldata = html.read
       
-      findFileAtPath(url, "favicon.ico") { |obj| 
-        puts "got data: #{obj}"
+      callback = Proc.new { |data| 
+        
+        @numberOfSearches -= 1
+     
+        @icons.push(data) if data
+        
+        if @numberOfSearches == 0
+          
+           #tempIconsArray.each do |icon|
+           #  icons.push(icon) if icon
+           #end
+          
+          yield @icons
+        end
+        
       }
+      
+      findFileAtPath(url, "favicon.ico", callback)
+      findFileAtPath(url, "favicon.ico", callback)
       
       #tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
       #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
@@ -74,12 +101,6 @@ class DomainSearchController
     rescue
       puts "error reading url"
     end
-    
-    tempIconsArray.each do |icon|
-      icons.push(icon) if icon
-    end
-    
-    return icons
     
   end
   
@@ -111,7 +132,9 @@ class DomainSearchController
   
   #Tries to get a favicon from a specified file location
  
-  def findFileAtPath(url, path) 
+  def findFileAtPath(url, path, myBlock) 
+    
+    @numberOfSearches += 1
     
     urlString = url.to_s
     urlString = "#{urlString}/#{path}"
@@ -123,7 +146,7 @@ class DomainSearchController
     #    getImageInfoFromFile(realUrl, url.host) { |imageInfo| yield imageInfo}
        
     #  }
-    getImageInfoFromFile(urlString, url.host) { |imageInfo| yield imageInfo }
+    getImageInfoFromFile(urlString, url.host) { |imageInfo| myBlock.call(imageInfo) }
     
     #imageInfo = getImageInfoFromFile(realUrl, url.host)
     
@@ -137,6 +160,7 @@ class DomainSearchController
 
     begin
 
+      @numberOfSearches += 1
       imageInfo = nil
       
       parsedPage = Nokogiri::HTML(htmldata)
