@@ -24,13 +24,19 @@ class DomainSearchController
 
   def findIconForDomain(searchString)
 
-    iconsArray = getArrayOfAvailableIconsForDomain(searchString)
-    
-    if iconsArray
-      {'icons' => iconsArray }.to_json
-    else
-      [].to_json
-    end
+    getArrayOfAvailableIconsForDomain(searchString) { |iconsArray|
+      
+      jsonArray = nil
+      
+      if iconsArray
+        jsonArray = {'icons' => iconsArray }.to_json
+      else
+        jsonArray = [].to_json
+      end
+      
+      yield jsonArray
+      
+    }
     
   end
   
@@ -47,12 +53,12 @@ class DomainSearchController
       if iconsArray.size == 0
       
         self.createImageInfoArray(url) { |data| 
-          next data
+          yield data
         }
       
       else
         
-        return iconsArray
+        yield iconsArray
   
       end #if icons.size == 0
       

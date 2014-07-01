@@ -11,7 +11,14 @@ class MyApp < Sinatra::Application
    content_type :json
    
    domainSearchController = DomainSearchController.new
-   body { domainSearchController.findIconForDomain(path) }
+   
+   domainSearchController.findIconForDomain(path) { |jsonArray|
+      
+      body { jsonArray } 
+     
+   }
+   
+   #body { domainSearchController.findIconForDomain(path) }
    
   end
   
