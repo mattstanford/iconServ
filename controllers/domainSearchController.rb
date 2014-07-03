@@ -68,9 +68,7 @@ class DomainSearchController
   def createImageInfoArray(url)
     
     begin
-      #html = open(url.to_s)
-      #htmldata = html.read
-      
+
       req = EM::HttpRequest.new(url.to_s).get :redirects => 1
       req.callback {
       
@@ -91,14 +89,12 @@ class DomainSearchController
         
         findFileAtPath(url, "favicon.ico", searchCallback)
         findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata, searchCallback)
-        
-        #tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
-        #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
-        #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href", htmldata))
-        #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href", htmldata))
-        #tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
-        #tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content", htmldata)) 
-        #tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content", htmldata))
+        findIconLinkOnPage(url, "link[rel='icon']", "href", htmldata, searchCallback)
+        findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href", htmldata, searchCallback)
+        findFileAtPath(url, "apple-touch-icon.png", searchCallback)
+        findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content", htmldata, searchCallback)
+        findIconLinkOnPage(url, "meta[property='og:image']", "content", htmldata, searchCallback)
+       
       }
       req.errback {
         yield @icons
