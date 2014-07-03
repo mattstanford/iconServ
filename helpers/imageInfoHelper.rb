@@ -17,7 +17,14 @@ class ImageInfoHelper
         #Read in the image using the RMagick library
         image = Magick::ImageList.new
         imageBlob = req.response
-        image.from_blob(imageBlob){self.format=fileFormat}
+        
+        begin
+          image.from_blob(imageBlob){self.format=fileFormat}
+        rescue
+          puts "Blob not found"
+          image = nil
+        end
+        
         
         yield image
         
