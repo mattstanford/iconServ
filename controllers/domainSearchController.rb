@@ -118,14 +118,22 @@ class DomainSearchController
     
       if blob
         
-        imageInfo = ImageInfo.new
-        imageInfo.url = fileUrl
-        imageInfo.width = blob.columns
-        imageInfo.height = blob.rows
-        imageInfo.fileFormat = blob.format
-        imageInfo.domain = domain
+        begin
         
-        imageInfo.save
+          imageInfo = ImageInfo.new
+          imageInfo.url = fileUrl
+          imageInfo.width = blob.columns
+          imageInfo.height = blob.rows
+          imageInfo.fileFormat = blob.format
+          imageInfo.domain = domain
+          
+          imageInfo.save
+          
+        rescue
+          
+          yield nil
+          
+        end
       end
       
       yield imageInfo
