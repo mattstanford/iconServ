@@ -63,56 +63,54 @@ class DomainSearchController
       end #if icons.size == 0
       
     end  #if url
-    
-    #return iconsArray
-
   end
   
   def createImageInfoArray(url)
     
-    #icons = Array.new
-    #tempIconsArray = Array.new
-    
     begin
-      html = open(url.to_s)
-      htmldata = html.read
+      #html = open(url.to_s)
+      #htmldata = html.read
       
-      callback = Proc.new { |data| 
-        
-        @numberOfSearches -= 1
-     
-        @icons.push(data) if data
-        
-        if @numberOfSearches == 0
+      req = EM::HttpRequest.new(url.to_s).get :redirects => 1
+      req.callback {
+      
+        searchCallback = Proc.new { |data| 
           
-           #tempIconsArray.each do |icon|
-           #  icons.push(icon) if icon
-           #end
+          @numberOfSearches -= 1
+       
+          @icons.push(data) if data
           
-          yield @icons
-        end
+          if @numberOfSearches == 0
+    
+            yield @icons
+            
+          end
+          
+        }
         
+        findFileAtPath(url, "favicon.ico", searchCallback)
+        findFileAtPath(url, "favicon.ico", searchCallback)
+        
+        #tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
+        #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
+        #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href", htmldata))
+        #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href", htmldata))
+        #tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
+        #tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content", htmldata)) 
+        #tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content", htmldata))
       }
-      
-      findFileAtPath(url, "favicon.ico", callback)
-      findFileAtPath(url, "favicon.ico", callback)
-      
-      #tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
-      #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
-      #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='icon']", "href", htmldata))
-      #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='apple-touch-icon']", "href", htmldata))
-      #tempIconsArray.push(findFileAtPath(url, "apple-touch-icon.png"))
-      #tempIconsArray.push(findIconLinkOnPage(url, "meta[name='msapplication-TileImage']", "content", htmldata)) 
-      #tempIconsArray.push(findIconLinkOnPage(url, "meta[property='og:image']", "content", htmldata))
+      req.errback {
+        yield @icons
+      }
     rescue
       puts "error reading url"
+      yield @icons
     end
     
   end
   
   def getImageInfoFromFile(fileUrl, domain)
     
-    #blob = ImageInfoHelper.getImageBlob(fileUrl)
     ImageInfoHelper.getImageBlob(fileUrl) { |blob| 
     
       imageInfo = nil
@@ -131,8 +129,6 @@ class DomainSearchController
       
       yield imageInfo
     }
-        
-    #return imageInfo
     
   end
   
@@ -146,17 +142,10 @@ class DomainSearchController
     urlString = "#{urlString}/#{path}"
     
     #Account for redirects
-    #realUrl = NetworkHelper.getRealUrlLocation(urlString)
-    #NetworkHelper.getRealUrlLocation(urlString) { |realUrl| 
-        
-    #    getImageInfoFromFile(realUrl, url.host) { |imageInfo| yield imageInfo}
-       
-    #  }
+
     getImageInfoFromFile(urlString, url.host) { |imageInfo| myBlock.call(imageInfo) }
     
-    #imageInfo = getImageInfoFromFile(realUrl, url.host)
-    
-    #return imageInfo
+
     
   end
  

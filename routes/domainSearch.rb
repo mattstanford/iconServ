@@ -18,8 +18,6 @@ class MyApp < Sinatra::Application
      
    }
    
-   #body { domainSearchController.findIconForDomain(path) }
-   
   end
   
 
