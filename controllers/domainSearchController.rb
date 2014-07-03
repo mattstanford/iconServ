@@ -87,9 +87,10 @@ class DomainSearchController
           end
           
         }
+        htmldata = req.response
         
         findFileAtPath(url, "favicon.ico", searchCallback)
-        findFileAtPath(url, "favicon.ico", searchCallback)
+        findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata, searchCallback)
         
         #tempIconsArray.push(findFileAtPath(url, "favicon.ico"))
         #tempIconsArray.push(findIconLinkOnPage(url, "link[rel='shortcut icon']", "href", htmldata))
@@ -134,7 +135,7 @@ class DomainSearchController
   
   #Tries to get a favicon from a specified file location
  
-  def findFileAtPath(url, path, myBlock) 
+  def findFileAtPath(url, path, callback) 
     
     @numberOfSearches += 1
     
@@ -143,7 +144,7 @@ class DomainSearchController
     
     #Account for redirects
 
-    getImageInfoFromFile(urlString, url.host) { |imageInfo| myBlock.call(imageInfo) }
+    getImageInfoFromFile(urlString, url.host) { |imageInfo| callback.call(imageInfo) }
     
 
     
@@ -151,12 +152,11 @@ class DomainSearchController
  
   #Tries to get the favicon from a tag in the head of the HTML page
    
-  def findIconLinkOnPage(url, cssTagLink, cssTagAttribute, htmldata)
+  def findIconLinkOnPage(url, cssTagLink, cssTagAttribute, htmldata, callback)
 
     begin
 
       @numberOfSearches += 1
-      imageInfo = nil
       
       parsedPage = Nokogiri::HTML(htmldata)
       elements = parsedPage.css(cssTagLink)
@@ -164,17 +164,20 @@ class DomainSearchController
       if elements.size > 0
       
         linkString = elements[0][cssTagAttribute]     
-        imageInfo = getImageInfoFromFile(linkString, url.host)
+        #imageInfo = getImageInfoFromFile(linkString, url.host)
+        getImageInfoFromFile(linkString, url.host) { |imageInfo| callback.call(imageInfo) }
+      
+      else
         
+        callback.call(nil)
+      
       end
       
     rescue
       
-      imageInfo = nil
+      callback.call(nil)
       
     end
-      
-    return imageInfo
     
   end
   
