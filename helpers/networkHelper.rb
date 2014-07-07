@@ -8,6 +8,9 @@ class NetworkHelper
   
   def self.getValidUrl(domain)
     
+    #Remove "www" (or http) if it is there
+    domain = domain.sub(/^https?\:\/\//, '').sub(/^www./,'')
+    
     urlString = "http://#{domain}/"
     
     #Check to make sure the url is valid
@@ -25,6 +28,9 @@ class NetworkHelper
     end
     
     if urlString
+      
+
+      
       url = URI.parse(urlString)
     end
     
