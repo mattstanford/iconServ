@@ -4,7 +4,7 @@ require_relative '../controllers/domainSearchController'
 
 class MyApp < Sinatra::Application
   
-  aget '/*' do
+  aget '/icons/*' do
     
    path = params[:splat].first
    
