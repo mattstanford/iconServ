@@ -8,9 +8,11 @@
   			var domainEntry = $("#domainInput").val();
   			var url = "icons/" + domainEntry;
   			
+  			clearExistingData();
+  			
   			$.get("icons/" + domainEntry, function(result)
-  			{	
-  				clearExistingData();
+  			{		
+  				
   				addData(result);
   			});
   			
@@ -26,10 +28,22 @@
 	function addData(data)
 	{
 		var icons = data.icons;
+		
+		if(icons.length == 0)
+		{
+			showNoResults();
+		}
+		
 		for (var index=0; index < icons.length; index++)
 		{
 			addDataItem(icons[index]);
 		}
+	}
+	
+	function showNoResults()
+	{
+		var htmlString = "<div class='iconData'>No icons returned</div>";
+		$("#results").append(htmlString);
 	}
 	
 	function addDataItem(dataItem)
